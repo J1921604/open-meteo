@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>気温予測アプリ</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>気温予測アプリ</h1>
+        </header>
+        
+        <main>
+            <div class="controls">
+                <button class="range-btn" data-type="past" data-days="14">過去-14日</button>
+                <button class="range-btn" data-type="past" data-days="7">過去-7日</button>
+                <button class="range-btn" data-type="past" data-days="1">過去-1日</button>
+                
+                <select id="city-select">
+                    <option value="" selected>-- 主要都市を選択 --</option>
+                    <option value="tokyo">Tokyo</option>
+                    <option value="nagoya">Nagoya</option>
+                    <option value="osaka">Osaka</option>
+                    <option value="fukuoka">Fukuoka</option>
+                    <option value="sapporo">Sapporo</option>
+                    <option value="new-york">New York</option>
+                    <option value="london">London</option>
+                    <option value="paris">Paris</option>
+                    <option value="sydney">Sydney</option>
+                    <option value="singapore">Singapore</option>
+                    <option value="dubai">Dubai</option>
+                    <option value="toronto">Toronto</option>
+                </select>
+
+                <div class="unit-toggle">
+                    <label class="switch">
+                        <input type="checkbox" id="unit-switch">
+                        <span class="slider round"></span>
+                    </label>
+                    <span id="unit-label">摂氏 (°C)</span>
+                </div>
+                
+                <button class="range-btn" data-type="future" data-days="1">今後+1日</button>
+                <button class="range-btn" data-type="future" data-days="7">今後+7日</button>
+                <button class="range-btn" data-type="future" data-days="14">今後+14日</button>
+            </div>
+
+            <div class="weather-card">
+                <div id="loading" class="status-message" style="display: none;">Loading data...</div>
+                <div id="error-message" class="status-message error" style="display: none;"></div>
+                <canvas id="weatherChart"></canvas>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

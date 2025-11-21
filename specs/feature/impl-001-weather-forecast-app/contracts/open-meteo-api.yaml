@@ -1,0 +1,282 @@
+openapi: 3.0.0
+info:
+  title: Open-Meteo Weather Forecast API
+  version: 1.0.0
+  description: |
+    Open-Meteo APIは無料の気象予測データAPIです。
+    認証不要で、世界中の地点の気温、降水量、風速などの気象データを取得できます。
+    
+    本アプリケーションでは、hourly.temperature_2mパラメータを使用して時間単位の気温データを取得します。
+    
+  contact:
+    name: Open-Meteo
+    url: https://open-meteo.com/
+  license:
+    name: CC BY 4.0
+    url: https://creativecommons.org/licenses/by/4.0/
+
+servers:
+  - url: https://api.open-meteo.com/v1
+    description: Open-Meteo 本番環境
+
+tags:
+  - name: forecast
+    description: 気象予測データ取得
+
+paths:
+  /forecast:
+    get:
+      summary: 気温予測データ取得
+      description: |
+        指定された緯度・経度の地点の気温予測データを取得します。
+        過去データ（past_days）と未来データ（forecast_days）を同時に取得可能。
+      operationId: getForecast
+      tags:
+        - forecast
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          description: 緯度（-90〜90の範囲）
+          schema:
+            type: number
+            format: float
+            minimum: -90
+            maximum: 90
+          example: 35.6785
+          
+        - name: longitude
+          in: query
+          required: true
+          description: 経度（-180〜180の範囲）
+          schema:
+            type: number
+            format: float
+            minimum: -180
+            maximum: 180
+          example: 139.6823
+          
+        - name: hourly
+          in: query
+          required: true
+          description: |
+            取得する気象要素（カンマ区切りで複数指定可能）
+            本アプリでは temperature_2m（地上2mの気温）のみ使用
+          schema:
+            type: string
+            enum:
+              - temperature_2m
+              - temperature_2m,precipitation
+              - temperature_2m,windspeed_10m
+          example: temperature_2m
+          
+        - name: timezone
+          in: query
+          required: true
+          description: |
+            タイムゾーン（IANA形式）
+            レスポンスのtimeフィールドがこのタイムゾーンで返される
+          schema:
+            type: string
+          examples:
+            tokyo:
+              value: Asia/Tokyo
+              summary: 日本標準時
+            newyork:
+              value: America/New_York
+              summary: 米国東部時間
+            london:
+              value: Europe/London
+              summary: 英国時間
+          
+        - name: past_days
+          in: query
+          required: false
+          description: |
+            過去何日分のデータを取得するか（0-92の範囲）
+            本アプリでは1, 7, 14のいずれかを使用
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 92
+            default: 0
+          example: 7
+          
+        - name: forecast_days
+          in: query
+          required: false
+          description: |
+            未来何日分の予測データを取得するか（0-16の範囲）
+            本アプリでは1, 7, 14のいずれかを使用
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 16
+            default: 7
+          example: 7
+          
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastResponse'
+              examples:
+                tokyo_7days:
+                  summary: 東京の過去7日+未来7日データ
+                  value:
+                    latitude: 35.6785
+                    longitude: 139.6823
+                    timezone: "Asia/Tokyo"
+                    hourly:
+                      time:
+                        - "2025-11-18T00:00"
+                        - "2025-11-18T01:00"
+                        - "2025-11-18T02:00"
+                      temperature_2m:
+                        - 12.5
+                        - 11.8
+                        - 11.2
+                        
+        '400':
+          description: 不正なパラメータ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_latitude:
+                  summary: 緯度が範囲外
+                  value:
+                    error: true
+                    reason: "Latitude must be in range -90 to 90"
+                invalid_timezone:
+                  summary: 不正なタイムゾーン
+                  value:
+                    error: true
+                    reason: "Invalid timezone"
+                    
+        '500':
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  summary: 内部サーバーエラー
+                  value:
+                    error: true
+                    reason: "Internal server error"
+                    
+        '503':
+          description: レート制限またはサービス一時停止
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rate_limit:
+                  summary: レート制限超過
+                  value:
+                    error: true
+                    reason: "Rate limit exceeded"
+
+components:
+  schemas:
+    ForecastResponse:
+      type: object
+      required:
+        - latitude
+        - longitude
+        - timezone
+        - hourly
+      properties:
+        latitude:
+          type: number
+          format: float
+          description: リクエストされた緯度
+          example: 35.6785
+        longitude:
+          type: number
+          format: float
+          description: リクエストされた経度
+          example: 139.6823
+        timezone:
+          type: string
+          description: タイムゾーン
+          example: "Asia/Tokyo"
+        hourly:
+          type: object
+          required:
+            - time
+            - temperature_2m
+          properties:
+            time:
+              type: array
+              description: |
+                日時の配列（ISO 8601形式、タイムゾーン考慮済み）
+                hourly APIでは1時間ごとのデータ
+              items:
+                type: string
+                format: date-time
+                example: "2025-11-25T12:00"
+            temperature_2m:
+              type: array
+              description: |
+                地上2mの気温の配列（摂氏）
+                time配列と同じ長さ
+              items:
+                type: number
+                format: float
+                example: 12.5
+          example:
+            time:
+              - "2025-11-18T00:00"
+              - "2025-11-18T01:00"
+              - "2025-11-18T02:00"
+            temperature_2m:
+              - 12.5
+              - 11.8
+              - 11.2
+              
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - reason
+      properties:
+        error:
+          type: boolean
+          description: エラーフラグ（常にtrue）
+          example: true
+        reason:
+          type: string
+          description: エラーの理由（英語）
+          example: "Invalid latitude"
+
+  examples:
+    TokyoRequest:
+      summary: 東京の気温データ取得
+      value:
+        latitude: 35.6785
+        longitude: 139.6823
+        hourly: temperature_2m
+        timezone: Asia/Tokyo
+        past_days: 7
+        forecast_days: 7
+        
+    NagoyaRequest:
+      summary: 名古屋の気温データ取得
+      value:
+        latitude: 35.1815
+        longitude: 136.9066
+        hourly: temperature_2m
+        timezone: Asia/Tokyo
+        past_days: 14
+        forecast_days: 14
+
+externalDocs:
+  description: Open-Meteo 公式ドキュメント
+  url: https://open-meteo.com/en/docs
