@@ -139,39 +139,89 @@
 
 ## 実装スケジュール
 
-### ガントチャート
+### 詳細ガントチャート
 
 ```mermaid
 gantt
     title 実装スケジュール（2025年12月25日開始）
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
-    excludes weekends 2025-12-27 2025-12-28 2025-12-29 2025-01-01 2025-01-02 2025-01-03 2025-01-04
+    excludes weekends 2025-12-27 2025-12-28 2025-12-29 2025-12-30 2025-12-31 2025-01-01 2025-01-02 2025-01-03 2025-01-04
     
     section Phase 1 Setup
-    T001-T004 Setup Tasks           :p1, 2025-12-25, 2d
+    T001 package.json確認            :done, t001, 2025-12-25, 1h
+    T002 .gitignore追加              :done, t002, after t001, 30m
+    T003 start-app.ps1動作確認       :done, t003, after t001, 30m
+    T004 ESLint設定                  :done, t004, after t002, 1h
     
     section Phase 2 Foundational
-    T005-T010 Foundational Tasks    :crit, p2, after p1, 3d
+    T005 HTML基本構造                :crit, done, t005, after t004, 2h
+    T006 CSS ベーススタイル          :crit, done, t006, after t004, 2h
+    T007 CITIES オブジェクト         :crit, done, t007, after t004, 1h
+    T008 Chart.js 初期化             :crit, done, t008, after t005, 2h
+    T009 グローバル変数定義          :crit, done, t009, after t007, 1h
+    T010 エラーハンドリング基盤      :crit, done, t010, after t008, 2h
     
-    section Phase 3 US1 (P1-MVP)
-    T011-T023 US1 Implementation    :active, p3, after p2, 5d
+    section Phase 3 US1 (MVP)
+    T011 HTML ドロップダウン         :active, done, t011, after t010, 1h
+    T012 HTML canvas 要素            :active, done, t012, after t010, 1h
+    T013 fetchWeatherData 関数       :active, done, t013, after t011, 3h
+    T014 buildApiUrl 関数            :active, done, t014, after t013, 2h
+    T015 processWeatherData 関数     :active, done, t015, after t013, 3h
+    T016 updateChart 関数            :active, done, t016, after t015, 4h
+    T017 都市選択イベントリスナー    :active, done, t017, after t016, 2h
+    T018 ローディングインジケーター  :active, done, t018, after t017, 2h
+    T019 APIエラーメッセージ         :active, done, t019, after t018, 2h
+    T020 CSS グラフコンテナ          :active, done, t020, after t012, 2h
+    T021 CSS レスポンシブデザイン    :active, done, t021, after t020, 3h
+    T022 Chart.js 凡例カスタマイズ   :active, done, t022, after t016, 2h
+    T023 console.log デバッグ出力    :active, done, t023, after t019, 1h
     
-    section Phase 4 US2 (P2)
-    T024-T030 US2 Implementation    :p4, after p3, 3d
+    section Phase 4 US2
+    T024 HTML 過去期間ボタン         :done, t024, after t023, 1h
+    T025 HTML 未来期間ボタン         :done, t025, after t023, 1h
+    T026 期間調整イベントリスナー    :done, t026, after t025, 2h
+    T027 期間変更API再リクエスト     :done, t027, after t026, 2h
+    T028 ボタン選択視覚フィードバック:done, t028, after t027, 2h
+    T029 CSS 期間ボタンスタイル      :done, t029, after t024, 2h
+    T030 期間変更バリデーション      :done, t030, after t028, 1h
     
-    section Phase 5 US3 (P3)
-    T031-T038 US3 Implementation    :p5, after p4, 3d
+    section Phase 5 US3
+    T031 HTML 単位切替トグル         :done, t031, after t030, 1h
+    T032 celsiusToFahrenheit 関数    :done, t032, after t031, 1h
+    T033 fahrenheitToCelsius 関数    :done, t033, after t031, 1h
+    T034 updateChartUnit 関数        :done, t034, after t033, 2h
+    T035 単位切替イベントリスナー    :done, t035, after t034, 1h
+    T036 API再リクエスト回避         :done, t036, after t035, 1h
+    T037 CSS トグルスイッチ          :done, t037, after t031, 2h
+    T038 Chart.js Y軸ラベル更新      :done, t038, after t034, 1h
     
     section Phase 6 Polish
-    T039-T047 Polish & Testing      :p6, after p5, 3d
+    T039 README.md 更新              :done, t039, after t038, 2h
+    T040 script.js リファクタリング  :done, t040, after t038, 4h
+    T041 JSDoc コメント追加          :done, t041, after t040, 3h
+    T042 style.css リファクタリング  :done, t042, after t038, 2h
+    T043 パフォーマンス検証          :done, t043, after t041, 2h
+    T044 ブラウザ互換性テスト        :done, t044, after t043, 2h
+    T045 DEPLOY_GUIDE.md 確認        :done, t045, after t038, 1h
+    T046 quickstart.md 検証          :done, t046, after t045, 1h
+    T047 セキュリティチェック        :done, t047, after t044, 2h
 ```
+
+**スケジュール詳細**:
+- **Phase 1 (Setup)**: 3時間（2025-12-25）
+- **Phase 2 (Foundational)**: 10時間（2025-12-26）
+- **Phase 3 (US1-MVP)**: 27時間（2025-12-30 - 2026-01-07）※年末年始除外
+- **Phase 4 (US2)**: 10時間（2026-01-08 - 2026-01-09）
+- **Phase 5 (US3)**: 9時間（2026-01-10）
+- **Phase 6 (Polish)**: 16時間（2026-01-13 - 2026-01-14）
 
 **注記**: 
 - 土日および年末年始（12/27-1/4）を除外
 - Phase 2（Foundational）は全ストーリーをブロックするクリティカルパス
 - Phase 3（US1）がMVP、この時点でデプロイ可能
-- 各フェーズ後にチェックポイントを設け、独立検証を実施
+- 各タスクに所要時間を設定し、並列実行可能なタスクを明示
+- 全タスク完了済み（done）を反映
 
 ## Dependencies & Execution Order
 
