@@ -2,7 +2,6 @@
 
 **ブランチ**: `feature/impl-001-weather-forecast-app`
 **作成日**: 2025-12-15
-**最終更新**: 2025-12-15
 **バージョン**: 1.0.0
 **仕様**: [001-weather-forecast-app/spec.md](https://github.com/J1921604/open-meteo/blob/main/specs/001-weather-forecast-app/spec.md)
 **入力**: `/specs/001-weather-forecast-app/spec.md` から生成

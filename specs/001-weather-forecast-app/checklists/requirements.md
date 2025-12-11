@@ -1,9 +1,8 @@
 # 要求仕様書: 気温予測アプリケーション
 
-**プロジェクト**: Open-Meteo Weather Forecast App  
-**バージョン**: 1.0.0  
-**作成日**: 2025-11-25  
-**最終更新**: 2025-11-25
+**プロジェクト**: Open-Meteo Weather Forecast App
+**バージョン**: 1.0.0
+**作成日**: 2025-12-15
 
 ## 1. プロジェクト概要
 
@@ -35,33 +34,33 @@ flowchart TB
         B[Chart.js ライブラリ]
         C[ユーザーインターフェース]
     end
-    
+  
     subgraph "外部サービス"
         D[Open-Meteo API]
         E[GitHub Pages]
     end
-    
+  
     C -->|都市選択| A
     A -->|HTTPS GET| D
     D -->|JSON レスポンス| A
     A -->|データ描画| B
     B -->|グラフ表示| C
     E -->|静的ファイル配信| A
-    
+  
     style A fill:#39ff14,stroke:#0f0,color:#000
     style D fill:#ff6b9d,stroke:#c41e3a,color:#fff
 ```
 
 ### 2.2 技術スタック
 
-| レイヤー | 技術 | バージョン | 用途 |
-|---------|------|-----------|------|
-| フロントエンド | HTML5 | - | ページ構造 |
-| スタイル | CSS3 | - | サイバーパンク風デザイン |
-| ロジック | JavaScript | ES6+ | API通信、グラフ制御 |
-| グラフ描画 | Chart.js | 4.x | 折れ線グラフ |
-| 外部API | Open-Meteo API | v1 | 気温データ取得 |
-| ホスティング | GitHub Pages | - | 静的サイト配信 |
+| レイヤー       | 技術           | バージョン | 用途                     |
+| -------------- | -------------- | ---------- | ------------------------ |
+| フロントエンド | HTML5          | -          | ページ構造               |
+| スタイル       | CSS3           | -          | サイバーパンク風デザイン |
+| ロジック       | JavaScript     | ES6+       | API通信、グラフ制御      |
+| グラフ描画     | Chart.js       | 4.x        | 折れ線グラフ             |
+| 外部API        | Open-Meteo API | v1         | 気温データ取得           |
+| ホスティング   | GitHub Pages   | -          | 静的サイト配信           |
 
 ### 2.3 データフロー
 
@@ -72,12 +71,12 @@ sequenceDiagram
     participant Script as script.js
     participant API as Open-Meteo API
     participant Chart as Chart.js
-    
+  
     User->>UI: 都市を選択
     UI->>Script: 都市変更イベント
     Script->>Script: 緯度・経度を取得
     Script->>API: GET /v1/forecast<br/>?latitude=X&longitude=Y<br/>&past_days=7&forecast_days=7
-    
+  
     alt API成功
         API->>Script: JSON レスポンス<br/>{hourly: {time: [...], temperature_2m: [...]}}
         Script->>Script: データ加工<br/>（過去/未来分離）
@@ -87,7 +86,7 @@ sequenceDiagram
         API->>Script: エラーレスポンス
         Script->>UI: エラーメッセージ表示
     end
-    
+  
     User->>UI: 温度単位切り替え
     UI->>Script: トグルイベント
     Script->>Script: 摂氏⇔華氏変換
@@ -99,24 +98,24 @@ sequenceDiagram
 
 ### 3.1 都市選択機能（FR-001, FR-002）
 
-**入力**: ユーザーがドロップダウンから都市を選択  
-**処理**: 選択された都市の緯度・経度を取得し、API リクエストパラメータに設定  
+**入力**: ユーザーがドロップダウンから都市を選択
+**処理**: 選択された都市の緯度・経度を取得し、API リクエストパラメータに設定
 **出力**: Open-Meteo API へのHTTPSリクエスト送信
 
 **都市マスターデータ**:
 
-| 都市名 | 緯度 | 経度 | タイムゾーン |
-|--------|------|------|-------------|
-| Tokyo | 35.6785 | 139.6823 | Asia/Tokyo |
-| Nagoya | 35.1815 | 136.9066 | Asia/Tokyo |
-| New York | 40.7128 | -74.0060 | America/New_York |
-| London | 51.5074 | -0.1278 | Europe/London |
-| Paris | 48.8566 | 2.3522 | Europe/Paris |
-| Sydney | -33.8688 | 151.2093 | Australia/Sydney |
-| Singapore | 1.3521 | 103.8198 | Asia/Singapore |
-| Dubai | 25.2048 | 55.2708 | Asia/Dubai |
-| Berlin | 52.5200 | 13.4050 | Europe/Berlin |
-| Los Angeles | 34.0522 | -118.2437 | America/Los_Angeles |
+| 都市名      | 緯度     | 経度      | タイムゾーン        |
+| ----------- | -------- | --------- | ------------------- |
+| Tokyo       | 35.6785  | 139.6823  | Asia/Tokyo          |
+| Nagoya      | 35.1815  | 136.9066  | Asia/Tokyo          |
+| New York    | 40.7128  | -74.0060  | America/New_York    |
+| London      | 51.5074  | -0.1278   | Europe/London       |
+| Paris       | 48.8566  | 2.3522    | Europe/Paris        |
+| Sydney      | -33.8688 | 151.2093  | Australia/Sydney    |
+| Singapore   | 1.3521   | 103.8198  | Asia/Singapore      |
+| Dubai       | 25.2048  | 55.2708   | Asia/Dubai          |
+| Berlin      | 52.5200  | 13.4050   | Europe/Berlin       |
+| Los Angeles | 34.0522  | -118.2437 | America/Los_Angeles |
 
 ### 3.2 気温データ取得機能（FR-003）
 
@@ -248,13 +247,13 @@ sequenceDiagram
 
 ### 4.1 パフォーマンス要件
 
-| 指標 | 目標値 | 測定方法 |
-|------|--------|----------|
-| APIレスポンスタイム | 200ms以下（P95） | Performance API |
-| 初回ページロード | 3秒以内（3G環境） | Lighthouse |
-| グラフ描画時間 | 100ms以下（100点） | performance.mark/measure |
-| メモリ使用量 | 100MB以下 | Chrome DevTools |
-| 同時API接続数 | 1接続のみ | 実装制約 |
+| 指標                | 目標値             | 測定方法                 |
+| ------------------- | ------------------ | ------------------------ |
+| APIレスポンスタイム | 200ms以下（P95）   | Performance API          |
+| 初回ページロード    | 3秒以内（3G環境）  | Lighthouse               |
+| グラフ描画時間      | 100ms以下（100点） | performance.mark/measure |
+| メモリ使用量        | 100MB以下          | Chrome DevTools          |
+| 同時API接続数       | 1接続のみ          | 実装制約                 |
 
 ### 4.2 セキュリティ要件
 
@@ -270,7 +269,7 @@ flowchart LR
     E --> G[レスポンス検証<br/>型チェック]
     G -->|OK| H[データ描画]
     G -->|NG| F
-    
+  
     style F fill:#ff6b9d,stroke:#c41e3a,color:#fff
     style E fill:#39ff14,stroke:#0f0,color:#000
 ```
@@ -285,7 +284,7 @@ flowchart LR
 ### 4.3 ユーザビリティ要件
 
 - **レスポンシブデザイン**: 画面幅768px以下でモバイル最適化
-- **アクセシビリティ**: 
+- **アクセシビリティ**:
   - キーボード操作可能（Tab キーでフォーカス移動）
   - ARIAラベル設定（`aria-label="都市選択"`）
   - カラーコントラスト比 4.5:1 以上（WCAG AA準拠）
@@ -294,13 +293,13 @@ flowchart LR
 
 ### 4.4 互換性要件
 
-| ブラウザ | 最小バージョン | 対応状況 |
-|----------|---------------|---------|
-| Chrome | 90+ | ✅ 完全対応 |
-| Firefox | 88+ | ✅ 完全対応 |
-| Safari | 14+ | ✅ 完全対応 |
-| Edge | 90+ | ✅ 完全対応 |
-| IE11 | - | ❌ 非対応 |
+| ブラウザ | 最小バージョン | 対応状況    |
+| -------- | -------------- | ----------- |
+| Chrome   | 90+            | ✅ 完全対応 |
+| Firefox  | 88+            | ✅ 完全対応 |
+| Safari   | 14+            | ✅ 完全対応 |
+| Edge     | 90+            | ✅ 完全対応 |
+| IE11     | -              | ❌ 非対応   |
 
 ## 5. UIデザイン仕様
 
@@ -430,15 +429,15 @@ http-server . -p 8080
 
 ## 9. 成功指標（KPI）
 
-| 指標 | 目標値 | 測定期間 |
-|------|--------|---------|
-| ページビュー | 100PV/月 | リリース後1ヶ月 |
-| 平均セッション時間 | 2分以上 | リリース後1ヶ月 |
-| 直帰率 | 50%以下 | リリース後1ヶ月 |
-| API成功率 | 99%以上 | 継続的 |
-| ユーザー満足度 | 4.0/5.0以上 | アンケート調査 |
+| 指標               | 目標値      | 測定期間        |
+| ------------------ | ----------- | --------------- |
+| ページビュー       | 100PV/月    | リリース後1ヶ月 |
+| 平均セッション時間 | 2分以上     | リリース後1ヶ月 |
+| 直帰率             | 50%以下     | リリース後1ヶ月 |
+| API成功率          | 99%以上     | 継続的          |
+| ユーザー満足度     | 4.0/5.0以上 | アンケート調査  |
 
 ---
 
-**承認**: 未承認  
+**承認**: 未承認
 **次のステップ**: plan.md 作成、技術調査、タスク分解

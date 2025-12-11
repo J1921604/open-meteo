@@ -1,9 +1,8 @@
 # データモデル: 気温予測アプリケーション
 
-**作成日**: 2025-12-15  
-**最終更新**: 2025-12-15  
-**バージョン**: 1.0.0  
-**Phase**: 1（設計 & 契約）  
+**作成日**: 2025-12-15
+**バージョン**: 1.0.0
+**Phase**: 1（設計 & 契約）
 **目的**: エンティティ、関係性、状態遷移を定義し、実装の基盤を構築
 
 ## エンティティ概要
@@ -22,13 +21,13 @@
 
 #### フィールド定義
 
-| フィールド名 | データ型 | 制約 | 説明 | 例 |
-|------------|---------|------|------|---|
-| key | string | 必須、一意、小文字ハイフン区切り | 都市識別子 | "tokyo" |
-| name | string | 必須、英語表記 | 表示名 | "Tokyo" |
-| latitude | number | 必須、-90〜90、小数点以下4桁 | 緯度 | 35.6785 |
-| longitude | number | 必須、-180〜180、小数点以下4桁 | 経度 | 139.6823 |
-| timezone | string | 必須、IANA形式 | タイムゾーン | "Asia/Tokyo" |
+| フィールド名 | データ型 | 制約                             | 説明         | 例           |
+| ------------ | -------- | -------------------------------- | ------------ | ------------ |
+| key          | string   | 必須、一意、小文字ハイフン区切り | 都市識別子   | "tokyo"      |
+| name         | string   | 必須、英語表記                   | 表示名       | "Tokyo"      |
+| latitude     | number   | 必須、-90〜90、小数点以下4桁     | 緯度         | 35.6785      |
+| longitude    | number   | 必須、-180〜180、小数点以下4桁   | 経度         | 139.6823     |
+| timezone     | string   | 必須、IANA形式                   | タイムゾーン | "Asia/Tokyo" |
 
 #### 検証ルール
 
@@ -50,7 +49,7 @@ function validateCity(city) {
 
 #### データソース
 
-`script.js`の`CITIES`オブジェクトに静的定義:
+`script.js`の `CITIES`オブジェクトに静的定義:
 
 ```javascript
 const CITIES = {
@@ -80,7 +79,7 @@ stateDiagram-v2
     ドロップダウン表示 --> 選択: ユーザー操作
     選択 --> API送信: fetchWeatherData()
     API送信 --> [*]
-    
+  
     note right of 静的定義
         変更不可
         将来的にJSON外部化可能
@@ -95,11 +94,11 @@ stateDiagram-v2
 
 #### フィールド定義
 
-| フィールド名 | データ型 | 制約 | 説明 | 例 |
-|------------|---------|------|------|---|
-| time | string | 必須、ISO 8601形式 | 日時 | "2025-11-25T12:00" |
-| temperature | number | 必須、-100〜100、小数点以下1桁 | 気温（摂氏） | 12.5 |
-| type | enum | 必須、"past" or "future" | データ種別 | "past" |
+| フィールド名 | データ型 | 制約                           | 説明         | 例                 |
+| ------------ | -------- | ------------------------------ | ------------ | ------------------ |
+| time         | string   | 必須、ISO 8601形式             | 日時         | "2025-11-25T12:00" |
+| temperature  | number   | 必須、-100〜100、小数点以下1桁 | 気温（摂氏） | 12.5               |
+| type         | enum     | 必須、"past" or "future"       | データ種別   | "past"             |
 
 #### 検証ルール
 
@@ -128,7 +127,7 @@ sequenceDiagram
     participant API as Open-Meteo API
     participant Script as script.js
     participant Chart as Chart.js
-    
+  
     Script->>API: GET /v1/forecast
     API->>Script: JSON {hourly: {time: [...], temperature_2m: [...]}}
     Script->>Script: processWeatherData()
@@ -154,12 +153,12 @@ sequenceDiagram
 
 #### フィールド定義
 
-| フィールド名 | データ型 | 制約 | デフォルト値 | 説明 |
-|------------|---------|------|------------|------|
-| selectedCity | string | CITIESオブジェクトに存在するkey | null | 選択中の都市 |
-| pastDays | number | 1, 7, 14のいずれか | 7 | 過去表示日数 |
-| futureDays | number | 1, 7, 14のいずれか | 7 | 未来表示日数 |
-| unit | enum | "celsius" or "fahrenheit" | "celsius" | 温度単位 |
+| フィールド名 | データ型 | 制約                            | デフォルト値 | 説明         |
+| ------------ | -------- | ------------------------------- | ------------ | ------------ |
+| selectedCity | string   | CITIESオブジェクトに存在するkey | null         | 選択中の都市 |
+| pastDays     | number   | 1, 7, 14のいずれか              | 7            | 過去表示日数 |
+| futureDays   | number   | 1, 7, 14のいずれか              | 7            | 未来表示日数 |
+| unit         | enum     | "celsius" or "fahrenheit"       | "celsius"    | 温度単位     |
 
 #### 検証ルール
 
@@ -190,23 +189,23 @@ function validateChartConfig(config) {
 stateDiagram-v2
     [*] --> 初期状態
     初期状態: selectedCity=null<br/>pastDays=7<br/>futureDays=7<br/>unit=celsius
-    
+  
     初期状態 --> 都市選択済み: citySelect.change
     都市選択済み --> API取得中: fetchWeatherData()
     API取得中 --> グラフ表示: API成功
     API取得中 --> エラー表示: API失敗
-    
+  
     グラフ表示 --> グラフ表示: 期間変更ボタン<br/>(pastDays/futureDays更新)
     グラフ表示 --> グラフ表示: 単位切り替え<br/>(unit更新)
     グラフ表示 --> API取得中: 期間変更後の再取得
-    
+  
     エラー表示 --> 都市選択済み: 再試行
-    
+  
     note right of グラフ表示
         期間変更: API再取得
         単位切り替え: クライアント計算のみ
     end note
-    
+  
     note right of API取得中
         ローディングスピナー表示
         グラフは opacity: 0.3
@@ -235,7 +234,7 @@ erDiagram
     CITY ||--o{ TEMPERATURE_DATA : "取得"
     CHART_CONFIG ||--|| CITY : "参照"
     CHART_CONFIG ||--o{ TEMPERATURE_DATA : "表示"
-    
+  
     CITY {
         string key PK
         string name
@@ -243,13 +242,13 @@ erDiagram
         number longitude
         string timezone
     }
-    
+  
     TEMPERATURE_DATA {
         string time
         number temperature
         enum type
     }
-    
+  
     CHART_CONFIG {
         string selectedCity FK
         number pastDays
@@ -276,13 +275,14 @@ erDiagram
 
 **永続化不要**: すべてのデータはセッション内のみで有効。
 
-| エンティティ | 永続化 | 理由 |
-|------------|-------|------|
-| City | 不要（静的定義） | マスターデータ |
-| TemperatureData | 不要 | API再取得可能 |
-| ChartConfig | 不要 | ページリロードで初期化 |
+| エンティティ    | 永続化           | 理由                   |
+| --------------- | ---------------- | ---------------------- |
+| City            | 不要（静的定義） | マスターデータ         |
+| TemperatureData | 不要             | API再取得可能          |
+| ChartConfig     | 不要             | ページリロードで初期化 |
 
 **将来的な拡張**:
+
 - `localStorage`でChartConfigを永続化（お気に入り都市保存）
 - サービスワーカーでTemperatureDataをキャッシュ（オフライン対応）
 
@@ -292,11 +292,11 @@ erDiagram
 
 ### 1. 入力検証
 
-| エンティティ | 検証タイミング | 検証内容 |
-|------------|-------------|---------|
-| City | アプリ起動時 | CITIES定義の完全性確認 |
-| TemperatureData | API取得時 | レスポンス形式検証 |
-| ChartConfig | ユーザー操作時 | 期間・単位の妥当性 |
+| エンティティ    | 検証タイミング | 検証内容               |
+| --------------- | -------------- | ---------------------- |
+| City            | アプリ起動時   | CITIES定義の完全性確認 |
+| TemperatureData | API取得時      | レスポンス形式検証     |
+| ChartConfig     | ユーザー操作時 | 期間・単位の妥当性     |
 
 ### 2. エラーハンドリング
 
@@ -331,12 +331,12 @@ if (![1, 7, 14].includes(parseInt(button.dataset.past))) {
 
 ### メモリ使用量
 
-| エンティティ | 最大サイズ | 計算 |
-|------------|-----------|------|
-| CITIES | 1KB | 10都市 × 100バイト |
-| TemperatureData | 5KB | 672ポイント × 8バイト |
-| ChartConfig | 100バイト | 4フィールド × 25バイト |
-| **合計** | **約6KB** | 憲法目標100MB以下を大幅に下回る |
+| エンティティ    | 最大サイズ      | 計算                            |
+| --------------- | --------------- | ------------------------------- |
+| CITIES          | 1KB             | 10都市 × 100バイト             |
+| TemperatureData | 5KB             | 672ポイント × 8バイト          |
+| ChartConfig     | 100バイト       | 4フィールド × 25バイト         |
+| **合計**  | **約6KB** | 憲法目標100MB以下を大幅に下回る |
 
 ### データ転送量
 
@@ -368,6 +368,6 @@ if (![1, 7, 14].includes(parseInt(button.dataset.past))) {
 
 ---
 
-**Version**: 1.0.0  
-**Created**: 2025-11-25  
+**Version**: 1.0.0
+**Created**: 2025-12-15
 **Status**: Phase 1完了、契約定義へ進行
