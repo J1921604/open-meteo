@@ -397,5 +397,5 @@ test('都市選択後にグラフが表示される', async () => {
 ---
 
 **Version**: 1.0.0
-**Created**: 2025-11-25
+**Created**: 2025-12-15
 **Status**: Phase 0完了、Phase 1へ進行

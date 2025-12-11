@@ -1,10 +1,9 @@
 # 機能仕様: 気温予測アプリケーション
 
-**機能ブランチ**: `001-weather-forecast-app`  
-**バージョン**: 1.0.0  
-**作成日**: 2025-12-15  
-**最終更新**: 2025-12-15  
-**ステータス**: 実装完了  
+**機能ブランチ**: `001-weather-forecast-app`
+**バージョン**: 1.0.0
+**作成日**: 2025-12-15
+**ステータス**: 実装完了
 **リポジトリ**: https://github.com/J1921604/open-meteo
 
 ## ユーザーシナリオ & テスト *(必須)*
@@ -24,7 +23,7 @@ flowchart TD
     ConvertUnit --> UpdateGraph[グラフ更新]
     UpdateGraph --> End[完了]
     ToggleUnit -->|No| End
-    
+  
     style Start fill:#ff6b9d,stroke:#ff6b9d,color:#fff
     style FetchData fill:#39ff14,stroke:#39ff14,color:#000
     style DisplayGraph fill:#00d4ff,stroke:#00d4ff,color:#000
@@ -39,7 +38,7 @@ sequenceDiagram
     participant UI as UIコンポーネント
     participant API as Open-Meteo API
     participant Chart as Chart.js
-    
+  
     U->>UI: 都市を選択
     UI->>API: GET /v1/forecast?latitude&longitude&timezone&hourly=temperature_2m
     API-->>UI: JSON レスポンス（hourly.time, hourly.temperature_2m）
@@ -47,14 +46,14 @@ sequenceDiagram
     UI->>Chart: データセット構築（過去=緑実線、未来=マゼンタ破線）
     Chart-->>UI: グラフ描画完了
     UI-->>U: グラフ表示
-    
+  
     U->>UI: 期間調整ボタンクリック
     UI->>API: GET /v1/forecast?past_days=14&forecast_days=7
     API-->>UI: 更新されたJSON レスポンス
     UI->>Chart: データセット更新
     Chart-->>UI: グラフ再描画完了
     UI-->>U: 更新されたグラフ表示
-    
+  
     U->>UI: 単位切り替えトグル
     UI->>UI: 摂氏→華氏変換（クライアント側計算）
     UI->>Chart: Y軸ラベル更新、データ変換
@@ -152,7 +151,7 @@ classDiagram
         +Float longitude
         +String timezone
     }
-    
+  
     class TemperatureData {
         +DateTime timestamp
         +Float temperature
@@ -160,7 +159,7 @@ classDiagram
         +isHistorical() bool
         +isForecast() bool
     }
-    
+  
     class ChartConfig {
         +Int pastDays
         +Int futureDays
@@ -169,11 +168,11 @@ classDiagram
         +toggleUnit() void
         +updatePeriod(past, future) void
     }
-    
+  
     ChartConfig --> City : 選択都市
     ChartConfig --> TemperatureData : 表示データ
     City --> TemperatureData : 生成元
-    
+  
     note for City "世界の主要12都市\n（Tokyo, Nagoya等）"
     note for TemperatureData "過去（実線）/未来（破線）\nで表示を区別"
     note for ChartConfig "摂氏/華氏切り替え\n期間調整の管理"

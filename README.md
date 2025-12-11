@@ -176,7 +176,7 @@ git checkout spec/001-temperature-chart
 git checkout -b feature/impl-001-temperature-chart
 ```
 
-詳細は [憲法ドキュメント](https://github.com/J1921604/open-meteo/blob/main/.specify/memory/constitution.md) および [開発ガイドライン](https://github.com/J1921604/open-meteo/blob/main/.github/copilot-commit-message-instructions.md) を参照してください。
+詳細は [憲法ドキュメント](https://github.com/J1921604/open-meteo/blob/main/.specify/memory/constitution.md) を参照してください。
 
 ## パフォーマンス目標
 
