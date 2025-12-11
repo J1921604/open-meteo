@@ -3,9 +3,30 @@
 気温予測アプリケーションを GitHub Pages で公開するための完全なデプロイガイドです。
 
 **バージョン**: 1.0.0  
-**最終更新**: 2025-11-25  
+**最終更新**: 2025-12-15  
 **リポジトリ**: https://github.com/J1921604/open-meteo  
 **公開URL**: https://j1921604.github.io/open-meteo/
+
+---
+
+## デプロイフロー
+
+```mermaid
+flowchart TD
+    A[ローカル開発] -->|git add/commit| B[Gitコミット]
+    B -->|git push origin main| C[GitHub Repository]
+    C -->|トリガー| D[GitHub Actions]
+    D -->|ビルド| E[artifact作成]
+    E -->|デプロイ| F[GitHub Pages]
+    F -->|公開| G[https://j1921604.github.io/open-meteo/]
+    
+    H[ブラウザ確認] -->|npm run serve| A
+    
+    style A fill:#39ff14,stroke:#39ff14,color:#000
+    style D fill:#ff6b9d,stroke:#ff6b9d,color:#fff
+    style F fill:#00d4ff,stroke:#00d4ff,color:#000
+    style G fill:#ffd700,stroke:#ffd700,color:#000
+```
 
 ---
 
@@ -63,15 +84,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './src'
-          
+        
   deploy:
     environment:
       name: github-pages
@@ -121,13 +142,15 @@ GitHub Actionsを使用しない場合の手順です。
 
 1. GitHubリポジトリページにアクセス
 2. `Settings`タブをクリック
-3. 左メニューから`Pages`を選択
+3. 左メニューから `Pages`を選択
 4. `Source`で以下のいずれかを選択:
 
    **方法A: GitHub Actions（推奨）**
+
    - `GitHub Actions`を選択
 
    **方法B: ブランチ指定**
+
    - `Deploy from a branch`を選択
    - Branch: `main`
    - Folder: `/src`（`/root`ではない）
@@ -164,7 +187,7 @@ GitHub Actionsを使用しない場合の手順です。
 ### 3. 単位切り替え確認
 
 - [ ] トグルスイッチで摂氏⇔華氏が切り替わる
-- [ ] Y軸ラベルが`気温 (℃)`または`気温 (℉)`に更新される
+- [ ] Y軸ラベルが `気温 (℃)`または `気温 (℉)`に更新される
 - [ ] 温度値が正しく変換されている
 
 ### 4. ブラウザ互換性確認
@@ -183,16 +206,18 @@ GitHub Actionsを使用しない場合の手順です。
 **原因**: パスが正しくない、またはデプロイが完了していない
 
 **解決策**:
+
 1. GitHub Actions の実行ログを確認
-2. `Settings` > `Pages` で`Source`設定を確認（`GitHub Actions`または`/src`フォルダ）
+2. `Settings` > `Pages` で `Source`設定を確認（`GitHub Actions`または `/src`フォルダ）
 3. ブラウザのキャッシュをクリア（Ctrl+Shift+R）
-4. `.github/workflows/deploy.yml`の`path`を確認（`'./src'`が正しい）
+4. `.github/workflows/deploy.yml`の `path`を確認（`'./src'`が正しい）
 
 ### 問題2: Chart.jsが読み込めない
 
 **原因**: CDNへのアクセスがブロックされている
 
 **解決策**:
+
 - `src/index.html`のChart.js CDN URLを確認:
   ```html
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -204,6 +229,7 @@ GitHub Actionsを使用しない場合の手順です。
 **原因**: Open-Meteo APIへのリクエストが失敗
 
 **解決策**:
+
 1. ブラウザのコンソールでエラーメッセージを確認
 2. Open-Meteo APIのステータスを確認: https://open-meteo.com/
 3. CORS問題の確認（GitHub Pagesでは通常発生しない）
@@ -213,6 +239,7 @@ GitHub Actionsを使用しない場合の手順です。
 **原因**: JavaScriptエラー、またはCanvas要素が見つからない
 
 **解決策**:
+
 1. ブラウザのコンソール（F12）でエラーを確認
 2. `weatherChart`要素が存在するか確認
 3. Chart.jsが正しく読み込まれているか確認
@@ -222,10 +249,11 @@ GitHub Actionsを使用しない場合の手順です。
 **原因**: 権限不足、またはワークフロー設定エラー
 
 **解決策**:
-1. `Settings` > `Pages` > `Source`が`GitHub Actions`になっているか確認
+
+1. `Settings` > `Pages` > `Source`が `GitHub Actions`になっているか確認
 2. `Settings` > `Actions` > `General` > `Workflow permissions`を確認
    - `Read and write permissions`を選択
-3. `.github/workflows/deploy.yml`の`path: './src'`を確認
+3. `.github/workflows/deploy.yml`の `path: './src'`を確認
 
 ---
 
@@ -290,8 +318,8 @@ npm run serve
 
 ---
 
-**Version**: 1.0.0  
-**Created**: 2025-11-25  
+**Version**: 1.0.0
+**Created**: 2025-11-25
 **Repository**: https://github.com/J1921604/open-meteo
 
 ---
@@ -322,7 +350,7 @@ flowchart TB
         J[ブラウザアクセス]
         K[アプリケーション利用]
     end
-    
+  
     subgraph API["外部サービス"]
         L[Open-Meteo API]
     end
@@ -347,12 +375,12 @@ flowchart TB
 
 ### デプロイフロー概要
 
-| ステップ        | 実行場所     | 処理内容                                   | 所要時間        |
-| --------------- | ------------ | ------------------------------------------ | --------------- |
-| 1. コミット     | ローカル     | `git push origin main`                   | -               |
-| 2. GitHub Pages | GitHub       | mainブランチのopen-meteo/を配信開始        | 即時            |
-| 3. CDN反映      | GitHub Pages | CDN反映                                    | 1-2分           |
-| **合計**  | -            | -                                          | **1-2分** |
+| ステップ        | 実行場所     | 処理内容                            | 所要時間        |
+| --------------- | ------------ | ----------------------------------- | --------------- |
+| 1. コミット     | ローカル     | `git push origin main`            | -               |
+| 2. GitHub Pages | GitHub       | mainブランチのopen-meteo/を配信開始 | 即時            |
+| 3. CDN反映      | GitHub Pages | CDN反映                             | 1-2分           |
+| **合計**  | -            | -                                   | **1-2分** |
 
 ---
 
@@ -464,13 +492,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-    
+  
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+    
       - name: Install dependencies
         run: npm ci
 jobs:
@@ -479,15 +507,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+    
       - name: Setup Pages
         uses: actions/configure-pages@v4
-    
+  
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './open-meteo'
-        
+      
   deploy:
     environment:
       name: github-pages

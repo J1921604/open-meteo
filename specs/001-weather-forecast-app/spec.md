@@ -2,12 +2,65 @@
 
 **機能ブランチ**: `001-weather-forecast-app`  
 **バージョン**: 1.0.0  
-**作成日**: 2025-11-25  
-**最終更新**: 2025-11-25  
+**作成日**: 2025-12-15  
+**最終更新**: 2025-12-15  
 **ステータス**: 実装完了  
 **リポジトリ**: https://github.com/J1921604/open-meteo
 
 ## ユーザーシナリオ & テスト *(必須)*
+
+### 全体フロー
+
+```mermaid
+flowchart TD
+    Start[ユーザーがアプリを開く] --> SelectCity[都市を選択]
+    SelectCity --> FetchData[Open-Meteo APIからデータ取得]
+    FetchData --> DisplayGraph[Chart.jsでグラフ表示]
+    DisplayGraph --> AdjustPeriod{期間調整?}
+    AdjustPeriod -->|Yes| ChangePeriod[過去/未来の日数変更]
+    ChangePeriod --> FetchData
+    AdjustPeriod -->|No| ToggleUnit{単位切り替え?}
+    ToggleUnit -->|Yes| ConvertUnit[摂氏⇔華氏変換]
+    ConvertUnit --> UpdateGraph[グラフ更新]
+    UpdateGraph --> End[完了]
+    ToggleUnit -->|No| End
+    
+    style Start fill:#ff6b9d,stroke:#ff6b9d,color:#fff
+    style FetchData fill:#39ff14,stroke:#39ff14,color:#000
+    style DisplayGraph fill:#00d4ff,stroke:#00d4ff,color:#000
+    style End fill:#ffd700,stroke:#ffd700,color:#000
+```
+
+### データフロー
+
+```mermaid
+sequenceDiagram
+    participant U as ユーザー
+    participant UI as UIコンポーネント
+    participant API as Open-Meteo API
+    participant Chart as Chart.js
+    
+    U->>UI: 都市を選択
+    UI->>API: GET /v1/forecast?latitude&longitude&timezone&hourly=temperature_2m
+    API-->>UI: JSON レスポンス（hourly.time, hourly.temperature_2m）
+    UI->>UI: 過去/未来データを分離
+    UI->>Chart: データセット構築（過去=緑実線、未来=マゼンタ破線）
+    Chart-->>UI: グラフ描画完了
+    UI-->>U: グラフ表示
+    
+    U->>UI: 期間調整ボタンクリック
+    UI->>API: GET /v1/forecast?past_days=14&forecast_days=7
+    API-->>UI: 更新されたJSON レスポンス
+    UI->>Chart: データセット更新
+    Chart-->>UI: グラフ再描画完了
+    UI-->>U: 更新されたグラフ表示
+    
+    U->>UI: 単位切り替えトグル
+    UI->>UI: 摂氏→華氏変換（クライアント側計算）
+    UI->>Chart: Y軸ラベル更新、データ変換
+    Chart-->>UI: グラフ再描画完了
+    UI-->>U: 華氏表示グラフ
+```
 
 ### ユーザーストーリー 1 - 都市選択と気温表示 (優先度: P1)
 
@@ -90,6 +143,41 @@
 - **FR-015**: 初期表示時は過去7日間・未来7日間のデータをデフォルトで表示しなければならない
 
 ### 主要エンティティ
+
+```mermaid
+classDiagram
+    class City {
+        +String name
+        +Float latitude
+        +Float longitude
+        +String timezone
+    }
+    
+    class TemperatureData {
+        +DateTime timestamp
+        +Float temperature
+        +String dataType
+        +isHistorical() bool
+        +isForecast() bool
+    }
+    
+    class ChartConfig {
+        +Int pastDays
+        +Int futureDays
+        +String unit
+        +City selectedCity
+        +toggleUnit() void
+        +updatePeriod(past, future) void
+    }
+    
+    ChartConfig --> City : 選択都市
+    ChartConfig --> TemperatureData : 表示データ
+    City --> TemperatureData : 生成元
+    
+    note for City "世界の主要12都市\n（Tokyo, Nagoya等）"
+    note for TemperatureData "過去（実線）/未来（破線）\nで表示を区別"
+    note for ChartConfig "摂氏/華氏切り替え\n期間調整の管理"
+```
 
 - **都市（City）**: 都市名、緯度、経度、タイムゾーン
 - **気温データ（TemperatureData）**: 日時、気温値（摂氏）、データ種別（過去/未来）
